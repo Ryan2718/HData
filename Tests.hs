@@ -7,6 +7,10 @@ module Main (main) where
 import Test.HUnit
 import qualified Stack as S
 import qualified Queue as Q
+import qualified Tree as T
+
+import Data.Foldable
+import Prelude hiding (foldl, foldr)
 
 stackTests :: Test
 stackTests = test [
@@ -41,9 +45,25 @@ queueTests = test [
   , "testP4" ~: "" ~: Just 5 ~=? Q.peek q4
   ]
 
+t1 :: T.Tree Int
+t1 = foldl T.insert T.None [4, 2, 6, 3, 7, 5, 1]
+
+treeTests :: Test
+treeTests = test [
+      "testFmap" ~: "" ~: map (3*) [1,2,3,4,5,6,7] ~=?
+                          (T.inOrder $ fmap (3*) t1)
+    , "testFoldr" ~: "" ~: 28 ~=? foldr (+) 0 t1
+    , "testPreOrder" ~: "" ~: [4, 2, 1, 3, 6, 5, 7] ~=? T.preOrder t1
+    , "testInOrder" ~: "" ~: [1, 2, 3, 4, 5, 6, 7] ~=? T.inOrder t1
+    , "testPostOrder" ~: "" ~: [1, 3, 2, 5, 7, 6, 4] ~=? T.postOrder t1
+    , "testContainsTrue" ~: "" ~: True ~=? T.contains t1 5
+    , "testContainsFalse" ~: "" ~: False ~=? T.contains t1 0
+    ]
+
 main :: IO ()
 main = do
   runTestTT stackTests
   runTestTT queueTests
+  runTestTT treeTests
   return ()
 
