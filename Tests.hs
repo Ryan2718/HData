@@ -48,6 +48,21 @@ queueTests = test [
 t1 :: T.Tree Int
 t1 = foldl T.insert T.None [4, 2, 6, 3, 7, 5, 1]
 
+t2 :: T.Tree Int
+t2 = foldl T.insert T.None [5, 3, 7, 1, 9]
+
+t3 :: T.Tree Int
+t3 = foldl T.insert T.None [4, 2, 6, 0, 8]
+
+t4 :: T.Tree Int
+t4 = T.union t2 t3
+
+t5 :: T.Tree Int
+t5 = T.intersection t2 t4 -- t2
+
+t6 :: T.Tree Int
+t6 = T.difference t4 t2 -- t3
+
 treeTests :: Test
 treeTests = test [
       "testFmap" ~: "" ~: map (3*) [1,2,3,4,5,6,7] ~=?
@@ -58,6 +73,9 @@ treeTests = test [
     , "testPostOrder" ~: "" ~: [1, 3, 2, 5, 7, 6, 4] ~=? T.postOrder t1
     , "testContainsTrue" ~: "" ~: True ~=? T.contains t1 5
     , "testContainsFalse" ~: "" ~: False ~=? T.contains t1 0
+    , "testUnion" ~: "" ~: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] ~=? T.inOrder t4
+    , "testIntersection" ~: "" ~: T.inOrder t2 ~=? T.inOrder t5
+    , "testDifference" ~: "" ~: T.inOrder t3 ~=? T.inOrder t6
     ]
 
 main :: IO ()
@@ -66,4 +84,3 @@ main = do
   runTestTT queueTests
   runTestTT treeTests
   return ()
-

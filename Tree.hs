@@ -1,3 +1,7 @@
+{-|
+Description : Tree Abstract Data Type
+Copyright   : (c) Ryan Forsyth, 2015
+-}
 module Tree
        (
          Tree(None)
@@ -12,17 +16,20 @@ module Tree
 
          -- * Search
        , contains
+       , (<<)
 
-         {-
          -- * Operations
        , union
+       , (&)
        , intersection
+       , (#)
        , difference
-         -}
+       , (//)
        ) where
 
 import Data.Foldable
-import Prelude hiding (foldr)
+import Data.List ((\\), intersect)
+import Prelude hiding (foldl, foldr)
 
 -- | Binary Search Tree Data Type
 data Tree a = None | Tree a (Tree a) (Tree a) deriving (Eq, Show)
@@ -63,3 +70,31 @@ contains (Tree root left right) x
   | root == x = True
   | x < root  = contains left x
   | otherwise = contains right x
+
+-- | Search for an element. Synonym for 'contains'
+(<<) :: (Ord a) => Tree a -> a -> Bool
+(<<) = contains
+
+-- | Union of two trees
+union :: (Ord a) => Tree a -> Tree a -> Tree a
+union a b = foldl insert a (inOrder b)
+
+-- | Union of two trees. Synonym for 'union'
+(&) :: (Ord a) => Tree a -> Tree a -> Tree a
+(&) = union
+
+-- | Intersection of two trees
+intersection :: (Ord a) => Tree a -> Tree a -> Tree a
+intersection a b = foldl insert None (intersect (inOrder a) (inOrder b))
+
+-- | Intersection of two trees. Synonym for 'intersection'
+(#) :: (Ord a) => Tree a -> Tree a -> Tree a
+(#) = intersection
+
+-- | Difference of two trees
+difference :: (Ord a) => Tree a -> Tree a -> Tree a
+difference a b  = foldl insert None ((inOrder a) \\ (inOrder b))
+
+-- | Difference of two trees. Synonym for 'difference'
+(//) :: (Ord a) => Tree a -> Tree a -> Tree a
+(//) = difference
